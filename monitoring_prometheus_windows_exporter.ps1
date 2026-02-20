@@ -16,14 +16,16 @@ New-Item -ItemType Directory -Force -Path $root, $promDir, $exporterDir | Out-Nu
 # -------------------------------
 Write-Host "Fetching latest Prometheus release info..."
 $promRelease = Invoke-RestMethod https://api.github.com/repos/prometheus/prometheus/releases/latest
-$promAsset = $promRelease.assets | Where-Object { $_.name -match "windows-amd64" } | Select-Object -First 1
+$promAsset = $promRelease.assets |
+    Where-Object { $_.name -like '*windows-amd64*' -and $_.name -like '*zip*' } |
+    Select-Object -First 1
 
 Write-Host "Downloading Prometheus $($promRelease.tag_name)..."
 Invoke-WebRequest -Uri $promAsset.browser_download_url -OutFile "$root\prometheus.zip"
 
 Write-Host "Extracting Prometheus..."
 Expand-Archive "$root\prometheus.zip" -DestinationPath $promDir -Force
-$promSubDir = Get-ChildItem $promDir | Where-Object { $_.PSIsContainer } | Select-Object -First 1
+$promSubDir = (Get-ChildItem -Path $promDir -Recurse -File -Filter 'prometheus.exe'). Where({ $true }, 1).Directory.FullName
 Move-Item "$promSubDir\*" $promDir -Force
 Remove-Item $promSubDir -Recurse -Force
 Remove-Item "$root\prometheus.zip"
