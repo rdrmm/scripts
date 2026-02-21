@@ -1,0 +1,55 @@
+---
+layout: default
+title: File viewer
+---
+
+<h1>Files in this folder</h1>
+
+<ul>
+  {%- assign current_dir = page.dir -%}
+  {%- for file in site.static_files -%}
+    {%- if file.path != page.path and file.path contains current_dir -%}
+      <li>
+        <a href="#"
+           class="file-link"
+           data-path="{{ file.path | relative_url }}">
+          {{ file.name }}
+        </a>
+      </li>
+    {%- endif -%}
+  {%- endfor -%}
+</ul>
+
+<hr>
+
+<h2>Contents</h2>
+<pre id="file-contents" style="white-space: pre-wrap; font-family: monospace;"></pre>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('.file-link');
+    const output = document.getElementById('file-contents');
+
+    links.forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const path = link.getAttribute('data-path');
+
+        output.textContent = 'Loading ' + path + ' ...';
+
+        try {
+          const res = await fetch(path, { cache: 'no-store' });
+          if (!res.ok) {
+            output.textContent = 'Error loading file: ' + res.status + ' ' + res.statusText;
+            return;
+          }
+          const text = await res.text();
+          // No formatting other than newlines: just dump raw text
+          output.textContent = text;
+        } catch (err) {
+          output.textContent = 'Error: ' + err;
+        }
+      });
+    });
+  });
+</script>
