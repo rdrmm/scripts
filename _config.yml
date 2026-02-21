@@ -1,0 +1,3 @@
+webrick:
+  mime_types:
+    ps1: text/plain
