@@ -1,6 +1,6 @@
-# -------------------------------
-# Install Prometheus + windows_exporter on Windows
-# -------------------------------
+####################################################################
+# rdRMM script to install prometheus + windows_exporter on Windows #
+####################################################################
 
 $ErrorActionPreference = "Stop"
 
