@@ -1,3 +1,6 @@
+########################################################################
+# rdRMM wrapper to execute commands from url under jobID and save logs #
+########################################################################
 param(
     [Parameter(Mandatory=$true)]
     [string]$Url,
